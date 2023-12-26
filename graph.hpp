@@ -37,6 +37,79 @@
         }
     }
 
+    void Graph::removeEdge(int vertex1, int vertex2)
+    {
+        for (int i = 0; i < vec[vertex1].size(); ++i)
+        {
+            if (vec[vertex1][i] == vertex2)
+            {
+                vec[vertex1].erase(vec[vertex1].begin() + i);
+                break;
+            }
+        }
+    }
+
+    int Graph::vertexCount() const
+    {
+        return vec.size();
+    }
+
+    int Graph::edgeCount() const
+    {
+        int edges_count = 0;
+        for (int i = 0; i < vec.size(); ++i)
+        {
+            edges_count += vec[i].size();
+        }
+
+        return edges_count;
+    }
+
+    std::vector<int> Graph::vertexEdges(int vertex) const
+    {
+        return vec[vertex];
+    }
+
+    std::vector<int> Graph::shortPath(int vertex1, int vertex2) const
+    {
+        std::unordered_set<int> visited;
+        std::vector<int> path;
+        std::vector<int> short_path;
+        
+        dfs(vertex1, vertex2, visited, path, short_path);
+
+        return short_path;
+    }
+
+    void Graph::dfs(int vertex1, int vertex2, std::unordered_set<int>& visited, 
+            std::vector<int>& path, std::vector<int>& short_path) const
+    { 
+        if (short_path.empty() || path.size() <= short_path.size())
+        {
+            visited.insert(vertex1);
+            path.push_back(vertex1);
+
+            if (vertex1 == vertex2)
+            {
+                short_path = path;
+            }
+        
+            else
+            {   
+                for (int neigbour : vec[vertex1])
+                {
+                    if (visited.find(neigbour) == visited.end())
+                    {
+                        dfs(neigbour, vertex2, visited, path, short_path);
+                    }
+                }
+            }
+
+            visited.erase(vertex1);
+            path.pop_back();
+        }
+    }
+
     bool Graph::find(int vertex1, int vertex2) const
     {
         for (int i = 0; i < vec[vertex1].size(); ++i)
@@ -61,6 +134,7 @@
 			}
 			std::cout << std::endl;
 		}
+        std::cout << std::endl;
 	}
 
 #endif
