@@ -26,13 +26,7 @@ int main()
 
 	g1.printGraph();
 
-    std::vector<int> vec = g1.shortPath(0, 9);
-
-    for (int elem : vec)
-    {
-        std::cout << elem << ' ';
-    }
-    std::cout << std::endl;
+    g1.levelOrder(0);    
 
 	return 0;
 }

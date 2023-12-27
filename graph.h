@@ -3,6 +3,7 @@
 	
     #include <iostream>
 	#include <vector>
+    #include <queue>
     #include <unordered_set>
 
 	class Graph {
@@ -30,6 +31,7 @@
             bool find(int vertex1, int vertex2) const;
 
             std::vector<int> shortPath(int vertex1, int vertex2) const;
+            void levelOrder(int vertex) const;
 
 			void printGraph() const;
 	};

@@ -96,7 +96,7 @@
         
             else
             {   
-                for (int neigbour : vec[vertex1])
+                for (int& neigbour : vec[vertex1])
                 {
                     if (visited.find(neigbour) == visited.end())
                     {
@@ -108,6 +108,32 @@
             visited.erase(vertex1);
             path.pop_back();
         }
+    }
+
+    void Graph::levelOrder(int vertex) const
+    {
+        std::queue<int> vertexes;
+        vertexes.push(vertex);
+        
+        std::unordered_set<int> visited;
+        visited.insert(vertex);        
+
+        while (!vertexes.empty())
+        {
+            int vertex = vertexes.front();
+            for (int& elem : vec[vertex])
+            {
+                if (visited.find(elem) == visited.end())
+                {
+                    vertexes.push(elem);
+                    visited.insert(elem);
+                }
+            }
+
+            std::cout << vertex << ' ';
+            vertexes.pop();
+        }
+        std::cout << std::endl;
     }
 
     bool Graph::find(int vertex1, int vertex2) const
