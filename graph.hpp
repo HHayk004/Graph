@@ -1,19 +1,19 @@
 #ifndef GRAPH_HPP
 	#define GRAPH_HPP
 	
-	Graph::Graph(size_t size) : vec(size, std::vector<int>()) {}
+	Graph::Graph(size_t size) : vec(size, std::vector<std::pair<int, int>>()) {}
 
 	void Graph::addVertex()
 	{
-		vec.push_back(std::vector<int>());
+		vec.push_back(std::vector<std::pair<int, int>>());
 	}	
 
-	void Graph::addEdge(int vertex1, int vertex2)
+	void Graph::addEdge(int vertex1, int vertex2, int weight)
 	{
-		if (vertex1 >= 0 && vertex2 >= 0 && vertex1 < vec.size() && vertex2 < vec.size()
-            && vertex1 != vertex2 && !find(vertex1, vertex2))
+		if (vertex1 >= 0 && vertex1 < vec.size() && vertex1 != vertex2 &&
+            vertex2 >= 0 && vertex2 < vec.size() && weight > 0 && !find(vertex1, vertex2))
 		{
-			vec[vertex1].push_back(vertex2);
+			vec[vertex1].push_back({vertex2, weight});
 		}
 	}
 
@@ -27,10 +27,15 @@
             {
                 for (int j = 0; j < vec[i].size(); ++j)
                 {
-                    if (vec[i][j] == vertex)
+                    if (vec[i][j].first == vertex)
                     {
                         vec[i].erase(vec[i].begin() + j);
-                        break;
+                        --j;
+                    }
+
+                    else if (vec[i][j].first > vertex)
+                    {
+                        --vec[i][j].first;
                     }
                 }
             }
@@ -41,7 +46,7 @@
     {
         for (int i = 0; i < vec[vertex1].size(); ++i)
         {
-            if (vec[vertex1][i] == vertex2)
+            if (vec[vertex1][i].first == vertex2)
             {
                 vec[vertex1].erase(vec[vertex1].begin() + i);
                 break;
@@ -65,7 +70,7 @@
         return edges_count;
     }
 
-    std::vector<int> Graph::vertexEdges(int vertex) const
+    std::vector<std::pair<int, int>> Graph::vertexEdges(int vertex) const
     {
         return vec[vertex];
     }
@@ -73,41 +78,48 @@
     std::vector<int> Graph::shortPath(int vertex1, int vertex2) const
     {
         std::unordered_set<int> visited;
+        
         std::vector<int> path;
         std::vector<int> short_path;
         
-        dfs(vertex1, vertex2, visited, path, short_path);
+        int weight = 0;
+        int min_weight = 0;
+        
+        dfs(vertex1, vertex2, visited, path, short_path, weight, min_weight);
 
         return short_path;
     }
 
     void Graph::dfs(int vertex1, int vertex2, std::unordered_set<int>& visited, 
-            std::vector<int>& path, std::vector<int>& short_path) const
+                    std::vector<int>& path, std::vector<int>& short_path, int& weight, int& min_weight) const
     { 
-        if (short_path.empty() || path.size() <= short_path.size())
-        {
-            visited.insert(vertex1);
-            path.push_back(vertex1);
+        visited.insert(vertex1);
+        path.push_back(vertex1);
 
-            if (vertex1 == vertex2)
+        if (vertex1 == vertex2)
+        {
+            if (min_weight == 0 || weight < min_weight)
             {
                 short_path = path;
+                min_weight = weight;
             }
+        }
         
-            else
-            {   
-                for (int& neigbour : vec[vertex1])
+        else
+        {   
+            for (int i = 0; i < vec[vertex1].size(); ++i)
+            {
+                if (visited.find(vec[vertex1][i].first) == visited.end())
                 {
-                    if (visited.find(neigbour) == visited.end())
-                    {
-                        dfs(neigbour, vertex2, visited, path, short_path);
-                    }
+                    weight += vec[vertex1][i].second;
+                    dfs(vec[vertex1][i].first, vertex2, visited, path, short_path, weight, min_weight);
+                    weight -= vec[vertex1][i].second;
                 }
             }
-
-            visited.erase(vertex1);
-            path.pop_back();
         }
+    
+        visited.erase(vertex1);
+        path.pop_back();
     }
 
     void Graph::levelOrder(int vertex) const
@@ -121,12 +133,12 @@
         while (!vertexes.empty())
         {
             int vertex = vertexes.front();
-            for (int& elem : vec[vertex])
+            for (auto& elem : vec[vertex])
             {
-                if (visited.find(elem) == visited.end())
+                if (visited.find(elem.first) == visited.end())
                 {
-                    vertexes.push(elem);
-                    visited.insert(elem);
+                    vertexes.push(elem.first);
+                    visited.insert(elem.first);
                 }
             }
 
@@ -140,7 +152,7 @@
     {
         for (int i = 0; i < vec[vertex1].size(); ++i)
         {
-            if (vec[vertex1][i] == vertex2)
+            if (vec[vertex1][i].first == vertex2)
             {
                 return true;
             }
@@ -156,7 +168,7 @@
 			std::cout << i << " -> ";
 			for (int j = 0; j < vec[i].size(); ++j)
 			{
-				std::cout << vec[i][j] << ' ';
+				std::cout << '{' << vec[i][j].first << ", " << vec[i][j].second << "} ";
 			}
 			std::cout << std::endl;
 		}
