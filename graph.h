@@ -5,6 +5,7 @@
 	#include <vector>
     #include <queue>
     #include <utility>
+    #include <limits>
     #include <unordered_set>
 
 	class Graph {
@@ -12,10 +13,14 @@
 			std::vector<std::vector<std::pair<int, int>>> vec;
 	
             void dfs(int vertex1, int vertex2, std::unordered_set<int>& visited, 
-                     std::vector<int>& path, std::vector<int>& short_path, int& weight, int& min_weight) const;
+                     std::vector<int>& path, std::vector<int>& short_path,
+                     int& weight, int& min_weight) const;
 
-            void dijkstra_rec(int vertex, std::vector<int>& fast) const;
+            void dijkstraImpl(int vertex, std::vector<int>& fast) const;
 
+            void connectedComponentsImpl(int vertex, std::unordered_set<int>& visited,
+                 std::vector<int>& path, std::vector<std::vector<int>>& result) const;
+                
 		public:
 			Graph(size_t size = 0);
 			~Graph() = default;
@@ -37,6 +42,8 @@
             void levelOrder(int vertex) const;
 
             std::vector<int> dijkstra(int vertex) const;
+            
+            std::vector<std::vector<int>> connectedComponents() const;
 
 			void printGraph() const;
 	};

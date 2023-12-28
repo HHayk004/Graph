@@ -153,12 +153,12 @@
         std::vector<int> fast(vec.size(), INT_MAX);
         fast[vertex] = 0;
 
-        dijkstra_rec(vertex, fast);
+        dijkstraImpl(vertex, fast);
 
         return fast;
     }
 
-    void Graph::dijkstra_rec(int vertex, std::vector<int>& fast) const
+    void Graph::dijkstraImpl(int vertex, std::vector<int>& fast) const
     {
         for (const std::pair<int, int>& neighbor : vec[vertex])
         {
@@ -168,9 +168,65 @@
             if (w < fast[x])
             {
                 fast[x] = w;
-                dijkstra_rec(x, fast);
+                dijkstraImpl(x, fast);
             }
         }
+    }
+
+    std::vector<std::vector<int>> Graph::connectedComponents() const
+    {
+        std::vector<std::vector<int>> result(vec.size(), std::vector<int>()); 
+        
+        for (int i = 0; i < vec.size(); ++i)
+        {
+            if (result[i].empty())
+            {
+                std::vector<int> path;
+                std::unordered_set<int> visited;
+                
+                connectedComponentsImpl(i, visited, path, result);
+            }
+
+            std::sort(result[i].begin(), result[i].end());
+        }
+
+        return result;
+    }
+
+    void Graph::connectedComponentsImpl(int vertex, std::unordered_set<int>& visited,
+                                        std::vector<int>& path ,std::vector<std::vector<int>>& result) const
+    {
+        path.push_back(vertex);
+        visited.insert(vertex);
+
+        for (const std::pair<int, int>& neighbor : vec[vertex])
+        {
+            if (visited.find(neighbor.first) == visited.end())
+            {
+                for (const int& elem : path)
+                {
+                    bool check = true;
+                    for (int i = 0; i < result[elem].size(); ++i)
+                    {
+                        if (result[elem][i] == neighbor.first)
+                        {
+                            check = false;
+                            break;
+                        }
+                    }
+
+                    if (check)
+                    {
+                        result[elem].push_back(neighbor.first);
+                    }
+                }
+
+                connectedComponentsImpl(neighbor.first, visited, path, result);
+            }
+        }
+
+        path.pop_back();
+        visited.erase(vertex);
     }
     
     bool Graph::find(int vertex1, int vertex2) const

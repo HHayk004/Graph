@@ -24,11 +24,16 @@ int main()
 
     g1.printGraph();
 
-    std::vector<int> vec = g1.dijkstra(0);
+    std::vector<std::vector<int>> mat = g1.connectedComponents(); 
 
-    for (auto& elem : vec)
+    for (int i = 0; i < mat.size(); ++i)
     {
-        std::cout << elem << ' ';
+        std::cout << i << " -> ";
+        for (int j = 0; j < mat[i].size(); ++j)
+        {
+            std::cout << mat[i][j] << ' ';
+        }
+        std::cout << std::endl;
     }
     std::cout << std::endl;
 
