@@ -14,6 +14,8 @@
             void dfs(int vertex1, int vertex2, std::unordered_set<int>& visited, 
                      std::vector<int>& path, std::vector<int>& short_path, int& weight, int& min_weight) const;
 
+            void dijkstra_rec(int vertex, std::vector<int>& fast) const;
+
 		public:
 			Graph(size_t size = 0);
 			~Graph() = default;
@@ -33,6 +35,8 @@
 
             std::vector<int> shortPath(int vertex1, int vertex2) const;
             void levelOrder(int vertex) const;
+
+            std::vector<int> dijkstra(int vertex) const;
 
 			void printGraph() const;
 	};

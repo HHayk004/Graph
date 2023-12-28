@@ -148,6 +148,31 @@
         std::cout << std::endl;
     }
 
+    std::vector<int> Graph::dijkstra(int vertex) const
+    {
+        std::vector<int> fast(vec.size(), INT_MAX);
+        fast[vertex] = 0;
+
+        dijkstra_rec(vertex, fast);
+
+        return fast;
+    }
+
+    void Graph::dijkstra_rec(int vertex, std::vector<int>& fast) const
+    {
+        for (const std::pair<int, int>& neighbor : vec[vertex])
+        {
+            int x = neighbor.first;
+            int w = neighbor.second + fast[vertex];
+
+            if (w < fast[x])
+            {
+                fast[x] = w;
+                dijkstra_rec(x, fast);
+            }
+        }
+    }
+    
     bool Graph::find(int vertex1, int vertex2) const
     {
         for (int i = 0; i < vec[vertex1].size(); ++i)
